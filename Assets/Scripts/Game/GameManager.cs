@@ -9,45 +9,45 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
-#region Editor
+    #region Editor
 
     // References to GameObjects within the scene.
-    [ Header("Game Objects") ]
+    [Header("Game Objects")]
 
     [Tooltip("Player character")]
     public GameObject playerCharacter;
-    
-#endregion // Editor
 
-#region Internal
+    #endregion // Editor
+
+    #region Internal
 
     /// <summary> Did we start the game? </summary>
     private static bool sGameStarted = false;
-    
+
     /// <summary> Is the game currently paused? </summary>
     private static bool sGamePaused = true;
-    
+
     /// <summary> Singleton instance of the GameManager. </summary>
     private static GameManager sInstance;
-    
+
     /// <summary> Getter for the singleton GameManager object. </summary>
     public static GameManager Instance
     { get { return sInstance; } }
-    
-#endregion // Internal
 
-#region Interface
+    #endregion // Internal
+
+    #region Interface
 
     /// <summary> Enable/disable the mouse interaction mode. </summary>
     public bool interactiveMode
     {
-        get 
+        get
         { return playerCharacter.GetComponent<InputManager>().interact; }
-        set 
+        set
         { playerCharacter.GetComponent<InputManager>().interact = value; }
     }
 
-#endregion // Internal
+    #endregion // Internal
 
     /// <summary> Called when the script instance is first loaded. </summary>
     private void Awake()
@@ -77,10 +77,10 @@ public class GameManager : MonoBehaviour
     {
         // We have not started yet.
         sGameStarted = false;
-        
+
         // Mute all sounds until we start the game.
         SoundManager.Instance.masterMuted = true;
-        
+
         // Disable the player character.
         EnablePlayerCharacter(false);
     }
@@ -93,16 +93,16 @@ public class GameManager : MonoBehaviour
         { PauseGame(); return; }
 
         // Set the game as running.
-        sGameStarted = true; 
+        sGameStarted = true;
         sGamePaused = false;
-        
+
         // Make the sounds audible.
         SoundManager.Instance.masterMuted = false;
-        
+
         // Broadcast the "StartGame" message to all managers.
         transform.parent.BroadcastMessage("OnStartGame");
     }
-    
+
     /// <summary> Is the player character enabled? </summary>
     public bool PlayerCharacterEnabled()
     { return playerCharacter.GetComponent<CharacterSelector>().characterEnabled; }
@@ -114,11 +114,11 @@ public class GameManager : MonoBehaviour
         playerCharacter.GetComponent<Character3DMovement>().enabled = enabled;
         playerCharacter.GetComponent<CharacterSelector>().characterEnabled = enabled;
     }
-    
+
     /// <summary> Enable/disable the player character. </summary>
     public void TogglePlayerCharacter()
     { EnablePlayerCharacter(!PlayerCharacterEnabled()); }
-    
+
     /// <summary> Set the game to the "started" state. </summary>
     public void PauseGame()
     {
@@ -138,7 +138,7 @@ public class GameManager : MonoBehaviour
             sGamePaused = true;
         }
     }
-    
+
     /// <summary> Reset the game to the default state. </summary>
     public void ResetGame()
     {
@@ -165,13 +165,16 @@ public class GameManager : MonoBehaviour
 		 *       WebGL memory or just refreshing the page by reloading the 
 		 *       current URL ("OpenURL", "absoluteURL").
          */
-       
+
 #if UNITY_EDITOR
         // Quitting in Unity Editor: 
+        UnityEditor.EditorApplication.isPlaying = false;
 #elif UNITY_WEBPLAYER
         // Quitting in the WebGL build: 
+        Application.OpenURL("about:blank");
 #else // !UNITY_WEBPLAYER
         // Quitting in all other builds: 
+        Application.Quit();
 #endif
     }
 }
